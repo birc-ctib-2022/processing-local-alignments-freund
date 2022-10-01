@@ -19,22 +19,28 @@ def align(x: str, y: str, edits: str) -> tuple[str, str]:
 
     seqA, seqB = [i for i in x], [j for j in y]
     aligned_seqA, aligned_seqB = [], []
+    no_D = 0
+    no_I = 0
 
-    for op in edits:
-        if op == "M":
-            aligned_seqA.append(seqA.pop(0))
-            aligned_seqB.append(seqB.pop(0))
-        elif op == "D":
-            aligned_seqA.append(seqA.pop(0))
+    for i in range(len(edits)):
+        if edits[i] == "M":
+            aligned_seqA.append(seqA[i + no_I])
+            aligned_seqB.append(seqB[i + no_D])
+        elif edits[i] == "D":
+            aligned_seqA.append(seqA[i + no_I])
             aligned_seqB.append("-")
-        elif op == "I":
+            no_D -= 1
+        elif edits[i] == "I":
             aligned_seqA.append("-")
-            aligned_seqB.append(seqB.pop(0))
+            aligned_seqB.append(seqB[i + no_D])
+            no_I -= 1
+        else:   # Fixes index position if there's an unrecognized character in the edit string
+            no_D -= 1
+            no_I -= 1
 
     aligned_seqs = "".join(aligned_seqA), "".join(aligned_seqB)
 
     return aligned_seqs
-
 
 def edits(x: str, y: str) -> str:
     """Extract the edit operations from a pairwise alignment.
